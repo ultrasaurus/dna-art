@@ -1,5 +1,12 @@
-read_filename = "Pseudomonas-sequence.fasta"
-newfilename = "Pseudomonas-sequence.raw"
+root_name = ARGV[0]
+
+if root_name.nil?
+  puts "please specify root filename, like: ruby convert.rb ../Pseudomonas-sequence"
+  exit
+end
+
+read_filename = "#{root_name}.fasta"
+newfilename = "#{root_name}.raw"
 
 File.open(read_filename, 'r') do |rfile|
   File.open(newfilename, 'w') do |newfile|
