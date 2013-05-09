@@ -12,6 +12,7 @@ File.open(read_filename, 'r') do |rfile|
   File.open(newfilename, 'w') do |newfile|
     rfile.readline
     rfile.each do |line|
+      line.upcase!
       puts line
       newfile << line.chomp
     end
