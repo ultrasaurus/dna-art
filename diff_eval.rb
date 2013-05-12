@@ -76,26 +76,51 @@ puts data.length
 zipped = data[0].zip(*(data.drop(1)))
 #puts zipped[0].join
 
-diff_list = [0,0,0,0]
+list = []
 diff_count = 0
+was_same = false
+match_length = 0
+
 zipped.each do |element|
   puts element.join
   element.delete("N")
-  diff_list[diff_count] += 1
-  #puts element.uniq.length
-  #puts diff_count % 1 == 1
-  
-  if (element.uniq.length > 1) and (diff_count % 1 == 1)
-    puts "==============> different"
-    diff_count += 1
-  elsif (element.uniq.length == 1) and (diff_count % 1 == 0)
-    puts "==============> same"
-    diff_count += 1
+  list[diff_count] ||= {start:0, stop:0}
+  count = list[diff_count]
+  count[:stop] += 1
+
+  len = count[:stop] - count[:start]
+  if (element.uniq.length > 1) and was_same
+    was_same = false
+    puts "========================================== different"
+    if ( match_length <= 16 ) # reset
+      diff_count -= 1
+      count = list[diff_count]
+      count[:stop] += 1
+      puts "stop:#{count[:stop]}  start:#{count[:start]}"
+    else
+      puts "stop:#{count[:stop]}  start:#{count[:start]}"
+      new_start = count[:stop] + 1
+      diff_count += 1
+      list[diff_count] = {start:new_start, stop:new_start}
+    end
+  elsif (element.uniq.length == 1)
+    puts "========================================== same"
+    if was_same
+      match_length += 1
+    else
+      match_length = 0
+      was_same = true
+      
+      puts "stop:#{count[:stop]}  start:#{count[:start]} len:#{match_length}"
+      new_start = count[:stop] + 1
+      diff_count += 1
+      list[diff_count] = {start:new_start, stop:new_start}
+    end
   end
-  break if diff_list[diff_count].nil?
 end
 
-puts diff_list
+puts "============ list ==============="
+puts list
 
 
 
