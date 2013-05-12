@@ -25,6 +25,7 @@ while (File.exist?(read_filename(root_name, seq_num))) do
   puts "reading #{read_filename}"
   height = 0
   count = 0
+  str = ""
   newfilename = "#{root_name}#{seq_num}.raw"
   File.open(read_filename, 'r') do |rfile|
     File.open(newfilename, 'w') do |newfile|
@@ -35,6 +36,7 @@ while (File.exist?(read_filename(root_name, seq_num))) do
         count += line.length
         putc ('.')
         newfile << line
+        str << line
       end
 
       unless width.nil?
@@ -53,15 +55,22 @@ while (File.exist?(read_filename(root_name, seq_num))) do
     puts ""
   end
 
-  summary << {file:newfilename, height:height, length:count}
+  summary << {file:newfilename, height:height, length:count, bases_str:str}
   seq_num += 1
 end
 
 puts "root_name:#{root_name} width:#{width}"
-puts summary
+
+# sort by differences in the 7th base of each sequence (visually inspected for significance)
+summary.sort_by! { |s| s[:bases_str][7] }
+summary.each do |s|
+  puts "#{s[:file]}: height=#{s[:height]} length=#{s[:length]}"
+end
+
 puts "------------------------------------------"
-data = summary.map { |s| File.read(s[:file]).split(//) }
+data = summary.map { |s| s[:bases_str].split(//) }
 # now we have an array of arrays of bases
+
 
 puts data.length
 zipped = data[0].zip(*(data.drop(1)))
